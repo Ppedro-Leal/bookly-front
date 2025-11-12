@@ -1,13 +1,16 @@
 "use client";
 
+import { BookCard } from "@/components/BookCard";
 import { Navbar } from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
 import { Heart, Library, Plus, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
+import { mockBooks } from "@/data/mockData";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
+  const featuredBooks = mockBooks.slice(0, 4);
 
   return (
     <div>
@@ -78,6 +81,29 @@ export default function Home() {
               consciente.
             </p>
           </div>
+        </div>
+      </section>
+
+      <section className="container mx-auto px-4 py-16">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">
+            Livros em Destaque
+          </h2>
+          <p className="text-muted-foreground text-lg">
+            Descubra as últimas adições ao nosso catálogo
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {featuredBooks.map((book) => (
+            <BookCard key={book.id} book={book} />
+          ))}
+        </div>
+
+        <div className="text-center">
+          <Button variant="outline" size="lg">
+            Ver Todos os Livros
+          </Button>
         </div>
       </section>
     </div>
