@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Heart, Library, Plus, TrendingUp, Users } from "lucide-react";
 import { useState } from "react";
 import { mockBooks } from "@/data/mockData";
+import { Footer } from "@/components/Footer";
 
 export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -106,6 +107,8 @@ export default function Home() {
           </Button>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

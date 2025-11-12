@@ -12,7 +12,6 @@ export const BookCard = ({ book }) => {
           alt={book.title}
           width={100}
           height={20}
-          priority
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-3 right-3 flex flex-col gap-2">
