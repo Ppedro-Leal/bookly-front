@@ -2,6 +2,8 @@
 
 import { Navbar } from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
+import { Button } from "@/components/ui/button";
+import { Library, Plus } from "lucide-react";
 import { useState } from "react";
 
 export default function Home() {
@@ -10,8 +12,7 @@ export default function Home() {
   return (
     <div>
       <Navbar />
-      {/* Hero Section */}
-      <section className="container mx-auto px-4 py-16 md:py-24">
+      <section className="bg-white border-b mx-auto px-4 py-16 md:py-24">
         <div className="text-center space-y-6 max-w-4xl mx-auto">
           <h1 className="text-4xl md:text-6xl font-bold leading-tight">
             Empreste, venda ou descubra
@@ -30,19 +31,16 @@ export default function Home() {
             />
           </div>
 
-          {/* <div className="flex flex-wrap justify-center gap-4 pt-4">
-            <Link to="/catalogo">
-              <Button variant="hero" size="lg">
-                <BookOpen className="mr-2" />
-                Explorar Catálogo
-              </Button>
-            </Link>
-            <Link to="/auth">
-              <Button variant="outline" size="lg">
-                Cadastrar Meu Livro
-              </Button>
-            </Link>
-          </div> */}
+          <div className="flex flex-wrap justify-center gap-4 pt-4">
+            <Button size="lg">
+              <Library className="mr-2" />
+              Explorar Catálogo
+            </Button>
+            <Button variant="outline" size="lg">
+              <Plus />
+              Cadastrar Meu Livro
+            </Button>
+          </div>
         </div>
       </section>
     </div>
