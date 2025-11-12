@@ -25,8 +25,6 @@ export function Navbar() {
           <Info />
           Sobre
         </Button>
-      </div>
-      <div className="flex gap-2">
         <Button variant="outline" size="lg">
           <User />
           Entrar
