@@ -2,6 +2,7 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { MapPin, Tag } from "lucide-react";
+import Link from "next/link";
 
 export const BookCard = ({ book }) => {
   return (
@@ -15,17 +16,9 @@ export const BookCard = ({ book }) => {
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
         <div className="absolute top-3 right-3 flex flex-col gap-2">
-          <Badge
-            variant={book.type === "Venda" ? "default" : "secondary"}
-            className="shadow-md"
-          >
-            {book.type}
+          <Badge variant="secondary" className="shadow-md">
+            Doação
           </Badge>
-          {book.type !== "Empréstimo" && book.price && (
-            <Badge variant="outline" className="bg-card shadow-md">
-              R$ {book.price.toFixed(2)}
-            </Badge>
-          )}
         </div>
       </div>
 
@@ -47,9 +40,11 @@ export const BookCard = ({ book }) => {
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Button variant="outline" className="w-full">
-          Ver Detalhes
-        </Button>
+        <Link href={`/details/${book.id}`} className="w-full">
+          <Button variant="outline" className="w-full">
+            Ver Detalhes
+          </Button>
+        </Link>
       </CardFooter>
     </Card>
   );

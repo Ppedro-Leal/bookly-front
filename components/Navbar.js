@@ -22,10 +22,12 @@ export function Navbar() {
             Início
           </Button>
         </Link>
-        <Button variant="ghost">
-          <Library />
-          Catálogo
-        </Button>
+        <Link href="/catalogue">
+          <Button variant="ghost">
+            <Library />
+            Catálogo
+          </Button>
+        </Link>
         <Link href="/about">
           <Button variant="ghost">
             <Info />

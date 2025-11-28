@@ -41,7 +41,7 @@ export default function Home() {
   };
 
   const handleExplorarCatalogo = () => {
-    router.push("/catalogo");
+    router.push("/catalogue");
   };
 
   return (
