@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,13 +27,13 @@ import {
   Upload,
   BookOpen,
   User,
-  DollarSign,
   MapPin,
   CheckCircle,
 } from "lucide-react";
 
 export default function CadastrarLivro() {
   const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
@@ -42,13 +42,10 @@ export default function CadastrarLivro() {
   const [formData, setFormData] = useState({
     titulo: "",
     autor: "",
-    isbn: "",
     genero: "",
     condicao: "",
-    preco: "",
     descricao: "",
     localizacao: "",
-    tipoTransacao: "emprestimo",
   });
 
   const generos = [
@@ -76,6 +73,24 @@ export default function CadastrarLivro() {
     "Usado - Desgaste moderado",
     "Usado - Desgaste acentuado",
   ];
+
+  // Verificar autenticação ao carregar a página
+  useEffect(() => {
+    const checkAuth = () => {
+      const userToken = localStorage.getItem("userToken");
+      const userData = localStorage.getItem("userData");
+
+      if (!userToken || !userData) {
+        // Redirecionar para login se não estiver autenticado
+        router.push("/login?redirect=/forms");
+        return;
+      }
+
+      setIsLoggedIn(true);
+    };
+
+    checkAuth();
+  }, [router]);
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({
@@ -135,6 +150,12 @@ export default function CadastrarLivro() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!isLoggedIn) {
+      router.push("/login?redirect=/forms");
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -148,14 +169,22 @@ export default function CadastrarLivro() {
         submitData.append("imagem", selectedImage);
       }
 
+      // Recuperar dados do usuário logado
+      const userData = JSON.parse(localStorage.getItem("userData") || "{}");
+      submitData.append("doador_id", userData.id);
+      submitData.append("doador_nome", userData.name);
+
       console.log("Dados do livro:", {
         ...formData,
+        doador: userData.name,
         imagem: selectedImage ? selectedImage.name : "Nenhuma imagem",
       });
 
+      // Simular envio para API
       await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      router.push("/");
+      // Sucesso - redirecionar para home com mensagem de sucesso
+      router.push("/?success=doacao_cadastrada");
     } catch (error) {
       console.error("Erro ao cadastrar livro:", error);
       alert("Erro ao cadastrar livro. Tente novamente.");
@@ -163,6 +192,22 @@ export default function CadastrarLivro() {
       setIsLoading(false);
     }
   };
+
+  // Se não estiver logado, mostrar loading
+  if (!isLoggedIn) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <Navbar />
+        <div className="container mx-auto px-4 py-16 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-yellow-600 mx-auto mb-4"></div>
+            <p className="text-lg text-gray-600">Verificando autenticação...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -178,16 +223,6 @@ export default function CadastrarLivro() {
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
-
-          <div className="text-center">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Cadastrar Novo Livro
-            </h1>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Compartilhe seus livros com a comunidade e ajude outros leitores a
-              descobrir novas histórias
-            </p>
-          </div>
         </div>
 
         <div className="max-w-4xl mx-auto">
@@ -195,10 +230,10 @@ export default function CadastrarLivro() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-6 w-6" />
-                Informações do Livro
+                Informações do Livro para Doação
               </CardTitle>
               <CardDescription>
-                Preencha as informações sobre o livro que deseja cadastrar
+                Preencha as informações sobre o livro que deseja doar
               </CardDescription>
             </CardHeader>
 
@@ -234,17 +269,8 @@ export default function CadastrarLivro() {
                   </div>
                 </div>
 
+                {/* Gênero e Condição um ao lado do outro */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="space-y-2">
-                    <Label htmlFor="isbn">ISBN (Opcional)</Label>
-                    <Input
-                      id="isbn"
-                      placeholder="Código ISBN do livro"
-                      value={formData.isbn}
-                      onChange={(e) => handleChange("isbn", e.target.value)}
-                    />
-                  </div>
-
                   <div className="space-y-2">
                     <Label htmlFor="genero">Gênero *</Label>
                     <Select
@@ -263,9 +289,7 @@ export default function CadastrarLivro() {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="condicao">Condição do Livro *</Label>
                     <Select
@@ -284,45 +308,7 @@ export default function CadastrarLivro() {
                       </SelectContent>
                     </Select>
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="tipoTransacao">Tipo de Transação *</Label>
-                    <Select
-                      value={formData.tipoTransacao}
-                      onValueChange={(value) =>
-                        handleChange("tipoTransacao", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione o tipo" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="emprestimo">Empréstimo</SelectItem>
-                        <SelectItem value="venda">Venda</SelectItem>
-                        <SelectItem value="doacao">Doação</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
-
-                {formData.tipoTransacao === "venda" && (
-                  <div className="space-y-2">
-                    <Label htmlFor="preco" className="flex items-center gap-2">
-                      <DollarSign className="h-4 w-4" />
-                      Preço *
-                    </Label>
-                    <Input
-                      id="preco"
-                      type="number"
-                      placeholder="0,00"
-                      step="0.01"
-                      min="0"
-                      value={formData.preco}
-                      onChange={(e) => handleChange("preco", e.target.value)}
-                      required
-                    />
-                  </div>
-                )}
 
                 <div className="space-y-2">
                   <Label
@@ -456,8 +442,8 @@ export default function CadastrarLivro() {
                     />
                     <Label htmlFor="termos" className="text-sm">
                       Concordo com os termos de uso e confirmo que sou o
-                      proprietário legítimo deste livro ou tenho permissão para
-                      compartilhá-lo.
+                      proprietário legítimo deste livro e desejo doá-lo
+                      gratuitamente.
                     </Label>
                   </div>
 
@@ -485,12 +471,12 @@ export default function CadastrarLivro() {
                     {isLoading ? (
                       <>
                         <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
-                        Cadastrando...
+                        Cadastrando Doação...
                       </>
                     ) : (
                       <>
                         <Upload className="h-4 w-4 mr-2" />
-                        Cadastrar Livro
+                        Cadastrar Doação
                       </>
                     )}
                   </Button>
