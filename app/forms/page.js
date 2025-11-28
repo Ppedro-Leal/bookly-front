@@ -74,15 +74,13 @@ export default function CadastrarLivro() {
     "Usado - Desgaste acentuado",
   ];
 
-  // Verificar autenticação ao carregar a página
   useEffect(() => {
     const checkAuth = () => {
       const userToken = localStorage.getItem("userToken");
       const userData = localStorage.getItem("userData");
 
       if (!userToken || !userData) {
-        // Redirecionar para login se não estiver autenticado
-        router.push("/login?redirect=/forms");
+        router.push("/prelogin?redirect=/forms");
         return;
       }
 
@@ -193,7 +191,6 @@ export default function CadastrarLivro() {
     }
   };
 
-  // Se não estiver logado, mostrar loading
   if (!isLoggedIn) {
     return (
       <div className="min-h-screen bg-gray-50">
@@ -269,7 +266,6 @@ export default function CadastrarLivro() {
                   </div>
                 </div>
 
-                {/* Gênero e Condição um ao lado do outro */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <Label htmlFor="genero">Gênero *</Label>

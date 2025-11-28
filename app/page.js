@@ -33,7 +33,7 @@ export default function Home() {
 
   const handleDoarLivro = () => {
     if (!isLoggedIn) {
-      router.push("/login?redirect=/forms");
+      router.push("/prelogin?redirect=/forms");
       return;
     }
 

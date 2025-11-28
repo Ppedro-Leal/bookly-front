@@ -32,10 +32,12 @@ export function Navbar() {
             Sobre
           </Button>
         </Link>
-        <Button variant="outline" size="lg">
-          <User />
-          Entrar
-        </Button>
+        <Link href="/prelogin">
+          <Button variant="outline" size="lg">
+            <User />
+            Entrar
+          </Button>
+        </Link>
         <Link href="/forms">
           <Button size="lg">
             <Gift />
