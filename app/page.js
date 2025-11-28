@@ -4,11 +4,10 @@ import { BookCard } from "@/components/BookCard";
 import { Navbar } from "@/components/Navbar";
 import SearchBar from "@/components/SearchBar";
 import { Button } from "@/components/ui/button";
-import { Heart, Library, Plus, TrendingUp, Users, Gift } from "lucide-react";
+import { Heart, Library, TrendingUp, Users, Gift } from "lucide-react";
 import { useState, useEffect } from "react";
 import { mockBooks } from "@/data/mockData";
 import { Footer } from "@/components/Footer";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
@@ -16,9 +15,7 @@ export default function Home() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 
-  // Verificar se o usuário está logado (simulação)
   useEffect(() => {
-    // Na prática, você verificaria um token JWT, session, etc.
     const checkAuth = () => {
       const userToken = localStorage.getItem("userToken");
       const userData = localStorage.getItem("userData");
@@ -27,7 +24,6 @@ export default function Home() {
 
     checkAuth();
 
-    // Ouvir mudanças no localStorage (para quando o usuário fizer login/logout em outra aba)
     window.addEventListener("storage", checkAuth);
 
     return () => {
@@ -37,12 +33,10 @@ export default function Home() {
 
   const handleDoarLivro = () => {
     if (!isLoggedIn) {
-      // Redirecionar para página de login com callback para forms
       router.push("/login?redirect=/forms");
       return;
     }
 
-    // Se estiver logado, redirecionar normalmente
     router.push("/forms");
   };
 
