@@ -1,8 +1,7 @@
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardFooter } from "./ui/card";
+import { Button } from "./ui/button";
 import { MapPin, Tag } from "lucide-react";
-import Link from "next/link";
+import { Badge } from "./ui/badge";
 
 export const BookCard = ({ book }) => {
   return (
@@ -15,11 +14,6 @@ export const BookCard = ({ book }) => {
           height={20}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
         />
-        <div className="absolute top-3 right-3 flex flex-col gap-2">
-          <Badge variant="secondary" className="shadow-md">
-            Doação
-          </Badge>
-        </div>
       </div>
 
       <CardContent className="flex-1 p-4 space-y-2">
@@ -32,19 +26,12 @@ export const BookCard = ({ book }) => {
           <Tag className="h-3 w-3" />
           <span>{book.genre}</span>
         </div>
-
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <MapPin className="h-3 w-3" />
-          <span>{book.ownerCity}</span>
-        </div>
       </CardContent>
 
       <CardFooter className="p-4 pt-0">
-        <Link href={`/details/${book.id}`} className="w-full">
-          <Button variant="outline" className="w-full">
-            Ver Detalhes
-          </Button>
-        </Link>
+        <Button variant="outline" className="w-full">
+          Ver Detalhes
+        </Button>
       </CardFooter>
     </Card>
   );
