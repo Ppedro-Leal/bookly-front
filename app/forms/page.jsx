@@ -5,7 +5,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { Upload, X, Check } from "lucide-react";
+import { Upload, X } from "lucide-react";
 import useAuthStore from "@/store/userAuthStore";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_BACK4APP_API_URL;
@@ -94,7 +94,6 @@ async function registerBookOnBack4App(bookData, sessionToken) {
     },
   };
 
-  // Adiciona descrição apenas se foi fornecida
   if (description && description.trim()) {
     body.description = description;
   }
@@ -330,7 +329,6 @@ export default function BookRegisterPage() {
               onSubmit={handleSubmit}
               className="grid grid-cols-1 md:grid-cols-2 gap-10 items-start"
             >
-              {/* Upload de Capa */}
               <div className="flex flex-col items-center h-full">
                 <label
                   htmlFor="cover-upload"
@@ -357,7 +355,6 @@ export default function BookRegisterPage() {
                           e.stopPropagation();
                           handleRemoveFile();
                         }}
-                        // Botão de remover no canto superior
                         className="absolute top-2 right-2 p-1 rounded-full bg-white/70 text-red-600 hover:bg-white hover:text-red-800 z-10"
                         aria-label="Remover capa"
                       >
@@ -384,9 +381,7 @@ export default function BookRegisterPage() {
                 </label>
               </div>
 
-              {/* Formulário */}
               <div className="space-y-6">
-                {/* Título */}
                 <div>
                   <label
                     htmlFor="title"
@@ -406,7 +401,6 @@ export default function BookRegisterPage() {
                   />
                 </div>
 
-                {/* Autor */}
                 <div>
                   <label
                     htmlFor="author"
@@ -426,7 +420,6 @@ export default function BookRegisterPage() {
                   />
                 </div>
 
-                {/* Categoria */}
                 <div>
                   <label
                     htmlFor="categoryObjectId"
@@ -453,7 +446,6 @@ export default function BookRegisterPage() {
                   </select>
                 </div>
 
-                {/* Gêneros */}
                 <div>
                   <label className="block text-lg font-semibold text-gray-800 mb-2">
                     Gêneros (Múltipla escolha): *
@@ -482,7 +474,6 @@ export default function BookRegisterPage() {
                   </div>
                 </div>
 
-                {/* Descrição */}
                 <div>
                   <label
                     htmlFor="description"
@@ -501,7 +492,6 @@ export default function BookRegisterPage() {
                   />
                 </div>
 
-                {/* Tipo */}
                 <div>
                   <label className="block text-lg font-semibold text-gray-800 mb-2">
                     Tipo:
@@ -516,7 +506,6 @@ export default function BookRegisterPage() {
                   </div>
                 </div>
 
-                {/* Botão de Submit */}
                 <div className="pt-6 items-center flex justify-center">
                   <Button
                     type="submit"
