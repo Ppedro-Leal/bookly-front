@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import useAuthStore from "../../store/userAuthStore";
 
-// Função de API
 async function registerUser(userData) {
   const response = await fetch(`${process.env.NEXT_PUBLIC_BACK4APP_API_URL}/users`, {
     method: "POST",
@@ -48,7 +47,6 @@ export default function CadastroPage() {
   const [aceitarTermos, setAceitarTermos] = useState(false);
   const [receberNovidades, setReceberNovidades] = useState(false);
 
-  // Mutation para registro
   const registerMutation = useMutation({
     mutationFn: registerUser,
     onSuccess: (data) => {
@@ -126,15 +124,13 @@ export default function CadastroPage() {
         </div>
       </div>
 
-      {/* Lado Direito */}
       <div className="flex-1 flex items-center justify-center p-8 bg-white">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-lg p-4">
-            {/* BOTÃO VOLTAR */}
             <div className="mb-6">
               <span
                 onClick={voltar}
-                className="text-[#AF7026] text-lg font-medium hover:underline flex items-center cursor-pointer" // Adicionado cursor-pointer
+                className="text-[#AF7026] text-lg font-medium hover:underline flex items-center cursor-pointer" 
               >
                 &lt; Voltar
               </span>
@@ -214,7 +210,6 @@ export default function CadastroPage() {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-transparent outline-none transition"
               />
 
-              {/* Checkboxes */}
               <div className="mt-6 space-y-3">
                 <label className="flex items-start cursor-pointer">
                   <input
