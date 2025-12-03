@@ -18,8 +18,6 @@ import {
 } from "lucide-react";
 import useAuthStore from "../store/userAuthStore";
 import { useState } from "react";
-import { NavButton } from "./navButton";
-
 export function Navbar() {
   const router = useRouter();
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -29,6 +27,18 @@ export function Navbar() {
     router.push(path);
     setIsDropdownOpen(false);
   };
+
+  const NavButton = ({ href, icon: Icon, size, variant, children }) => (
+    <Button
+      className="cursor-pointer"
+      size={size ? size : "default"}
+      variant={variant}
+      onClick={() => navigate(href)}
+    >
+      <Icon className="h-5 w-5 mr-1" />
+      {children}
+    </Button>
+  );
 
   const handleLogout = () => {
     logout();
@@ -97,7 +107,7 @@ export function Navbar() {
               Sobre
             </NavButton>
             <NavButton
-              href="/prelogin"
+              href="/forms"
               size={"xl"}
               variant={"outline"}
               icon={Gift}
