@@ -2,25 +2,85 @@
 
 import { BookCard } from "../components/BookCard";
 import { Navbar } from "../components/Navbar";
-import SearchBar from "../components/SearchBar";
 import { Button } from "../components/ui/button";
-import { User, BookOpen, Handshake } from "lucide-react";
-import { useState } from "react";
-import { mockBooks } from "../data/mockData";
+import { User, BookOpen, Network } from "lucide-react";
 import { Footer } from "../components/Footer";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_BACK4APP_API_URL;
+const HEADERS = {
+  "X-Parse-Application-Id": process.env.NEXT_PUBLIC_BACK4APP_APP_ID,
+  "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_BACK4APP_REST_KEY,
+  "Content-Type": "application/json",
+};
+
+async function fetchFeaturedBooks() {
+  const response = await fetch(
+    `${API_BASE_URL}/classes/Book?limit=8&order=-createdAt&include=category,genres,owner`,
+    {
+      headers: HEADERS,
+      next: { revalidate: 300 },
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Erro ao buscar livros em destaque.");
+  }
+
+  const data = await response.json();
+  return data.results;
+}
 
 export default function Home() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const featuredBooks = mockBooks.slice(0, 8);
+  const router = useRouter();
 
-  const primaryColor = "text-[#AF7026]";
-  const buttonBgColor = "bg-[#7D4D0B] hover:bg-[#6A4009]";
+  const booksQuery = useQuery({
+    queryKey: ["featuredBooks"],
+    queryFn: fetchFeaturedBooks,
+  });
+
+  const navigate = (path) => {
+    router.push(path);
+    setIsDropdownOpen(false);
+  };
+
+  let booksContent;
+
+  if (booksQuery.isLoading) {
+    booksContent = (
+      <div className="text-center col-span-full">
+        <p className="text-[#AF7026]">Carregando livros...</p>
+      </div>
+    );
+  } else if (booksQuery.isError) {
+    booksContent = (
+      <div className="text-center col-span-full text-red-600">
+        <p>Erro ao carregar os livros. Tente novamente mais tarde.</p>
+        <p className="text-sm opacity-70">
+          Detalhe: {booksQuery.error.message}
+        </p>
+      </div>
+    );
+  } else if (booksQuery.data && booksQuery.data.length > 0) {
+    booksContent = booksQuery.data.map((book) => (
+      <BookCard key={book.objectId} book={book} />
+    ));
+  } else {
+    booksContent = (
+      <div className="text-center col-span-full text-gray-500">
+        <p>Nenhum livro em destaque encontrado no momento.</p>
+        <p>Cadastre o primeiro livro!</p>
+      </div>
+    );
+  }
 
   return (
     <div>
       <Navbar />
 
-      <section className="bg-[#AF7026] text-white py-20">
+      <section className="bg-[#AF7026] text-[#FFFFE3] py-20">
         <div className="text-center space-y-6 max-w-4xl mx-auto px-4">
           <h1 className="text-3xl font-bold">
             Compartilhe conhecimento!
@@ -28,21 +88,17 @@ export default function Home() {
               Doe, empreste e receba livros
             </span>
           </h1>
-          <p className="text-xl font-light">
+          <p className="text-xl font-light w-3/4 mx-auto">
             Conecte-se com outros amantes da leitura e descubra novos mundos
             através da troca de livros.
           </p>
 
-          <div className="pt-6 max-w-2xl mx-auto">
-            <SearchBar
-              value={searchQuery}
-              onChange={setSearchQuery}
-              onSearch={() => console.log("Search:", searchQuery)}
-            />
-          </div>
-
-          <div className="pt-4">
-            <Button size="lg" className={`${buttonBgColor} text-white`}>
+          <div className="pt-4 h-full w-full ">
+            <Button
+              size="xl"
+              className={`bg-[#7D4D0B] hover:bg-[#6A4009] text-white`}
+              onClick={() => navigate("/livros")}
+            >
               Explorar
             </Button>
           </div>
@@ -51,21 +107,22 @@ export default function Home() {
 
       <section className="container mx-auto px-4 py-16">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl md:text-4xl font-bold mb-4 ${primaryColor}`}>
+          <h2 className={`text-3xl md:text-4xl font-bold mb-4 text-[#AF7026]`}>
             Livros populares
           </h2>
+          <p className="text-muted-foreground text-lg">
+            Descubra as últimas adições ao nosso catálogo
+          </p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mb-16">
-          {featuredBooks.map((book) => (
-            <BookCard key={book.id} book={book} />
-          ))}
+          {booksContent}
         </div>
       </section>
 
-      <section className="bg-white py-16 border-t border-gray-200">
+      <section className="bg-[#F7E4C6] py-16 border-t border-gray-200">
         <div className="text-center mb-12">
-          <h2 className={`text-3xl font-bold mb-12 ${primaryColor}`}>
+          <h2 className={`text-3xl font-bold mb-12 text-[#AF7026]`}>
             Como Funciona
           </h2>
         </div>
@@ -93,7 +150,7 @@ export default function Home() {
 
           <div className="text-center space-y-3 p-6 bg-yellow-50 border-2 border-yellow-200 rounded-lg shadow-sm">
             <div className="w-16 h-16 mx-auto bg-[#AF7026] rounded-full flex items-center justify-center">
-              <Handshake className="h-8 w-8 text-white" />
+              <Network className="h-8 w-8 text-white" />
             </div>
             <h3 className="text-xl font-bold">3. Conecte-se</h3>
             <p className="text-muted-foreground text-sm">
