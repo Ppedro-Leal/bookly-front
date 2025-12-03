@@ -1,13 +1,70 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useMutation } from "@tanstack/react-query";
 import useAuthStore from "../../store/userAuthStore";
 import { User, Trash2, Lock, UserCog } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
+import Image from "next/image";
 
-// --- Funções de API (Mantidas) ---
+async function uploadFileToBack4App(file, sessionToken) {
+  if (!file) throw new Error("Nenhum arquivo de avatar selecionado.");
+
+  const uploadHeaders = {
+    "X-Parse-Application-Id": process.env.NEXT_PUBLIC_BACK4APP_APP_ID,
+    "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_BACK4APP_REST_KEY,
+    "Content-Type": file.type,
+    "X-Parse-Session-Token": sessionToken,
+  };
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACK4APP_API_URL}/files/${file.name}`,
+    {
+      method: "POST",
+      headers: uploadHeaders,
+      body: file,
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Erro ao fazer upload do avatar.");
+  }
+
+  return response.json();
+}
+
+async function uploadAvatarAndSaveUser(file, userId, token) {
+  const parseFileObject = await uploadFileToBack4App(file, token);
+
+  const updateData = {
+    avatar: {
+      __type: "File",
+      name: parseFileObject.name,
+    },
+  };
+
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_BACK4APP_API_URL}/users/${userId}`,
+    {
+      method: "PUT",
+      headers: {
+        "X-Parse-Application-Id": process.env.NEXT_PUBLIC_BACK4APP_APP_ID,
+        "X-Parse-REST-API-Key": process.env.NEXT_PUBLIC_BACK4APP_REST_KEY,
+        "X-Parse-Session-Token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(updateData),
+    }
+  );
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || "Erro ao associar avatar ao usuário.");
+  }
+  return { ...(await response.json()), avatar: parseFileObject };
+}
 
 async function fetchUserData(sessionToken) {
   const res = await fetch(
@@ -73,8 +130,6 @@ async function deleteUser(userId, token) {
   return {};
 }
 
-// --- Estados iniciais ---
-
 const initialDadosForm = {
   nome: "",
   username: "",
@@ -82,14 +137,11 @@ const initialDadosForm = {
   telefone: "",
 };
 
-// 🎯 CORREÇÃO: Removi a tag, pois não há remoção de campos aqui, apenas a correção do bug.
 const initialPerfilForm = {
   sobreMim: "",
   generosFavoritos: "",
   autoresFavoritos: "",
 };
-
-// --- Componente Principal ---
 
 export default function ProfileSettings() {
   const router = useRouter();
@@ -105,8 +157,8 @@ export default function ProfileSettings() {
   const [dadosForm, setDadosForm] = useState(initialDadosForm);
   const [perfilForm, setPerfilForm] = useState(initialPerfilForm);
 
-  // Funções para resetar os formulários para o estado do usuário no store
-  // Usamos useCallback para evitar re-criação desnecessária e manter a estabilidade
+  const fileInputRef = useRef(null);
+
   const resetDadosForm = useCallback(() => {
     setDadosForm({
       nome: user.nome || "",
@@ -124,8 +176,6 @@ export default function ProfileSettings() {
     });
   }, [user]);
 
-  // Efeito para carregar os dados completos
-  // 🟢 CORREÇÃO CRÍTICA: Impedir reset do estado enquanto o usuário está digitando (modo de edição ativo)
   useEffect(() => {
     const loadData = async () => {
       if (user && user.sessionToken) {
@@ -183,6 +233,19 @@ export default function ProfileSettings() {
     },
   });
 
+  const avatarUpdateMutation = useMutation({
+    mutationFn: (file) =>
+      uploadAvatarAndSaveUser(file, user.objectId, user.sessionToken),
+    onSuccess: (data) => {
+      updateUser(data);
+      alert("Foto de perfil atualizada com sucesso!");
+    },
+    onError: (error) => {
+      console.error("Erro ao atualizar foto:", error);
+      alert("Erro ao atualizar foto: " + error.message);
+    },
+  });
+
   const deleteMutation = useMutation({
     mutationFn: () => deleteUser(user.objectId, user.sessionToken),
     onSuccess: () => {
@@ -210,6 +273,15 @@ export default function ProfileSettings() {
   const handlePerfilChange = (e) => {
     const { name, value } = e.target;
     setPerfilForm((prevForm) => ({ ...prevForm, [name]: value }));
+  };
+
+  const handleFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      avatarUpdateMutation.mutate(file);
+
+      e.target.value = null;
+    }
   };
 
   const handleDadosSubmit = (e) => {
@@ -379,22 +451,42 @@ export default function ProfileSettings() {
       <div className="pt-8 flex gap-8">
         <div className="w-1/4 space-y-4">
           <div className="text-center">
-            <div className="w-40 h-40 mx-auto rounded-full bg-gray-200 mb-2 overflow-hidden flex items-center justify-center">
-              {user.avatarUrl ? (
-                <img
-                  src={user.avatarUrl}
+            <div className="w-40 h-40 mx-auto rounded-full bg-gray-200 mb-2 overflow-hidden flex items-center justify-center relative border-4 border-gray-300">
+              {user.avatar?.url ? (
+                <Image
+                  src={user.avatar.url}
                   alt="Avatar"
-                  className="w-full h-full object-cover"
+                  fill
+                  sizes="160px"
+                  className="object-cover"
                 />
               ) : (
                 <User className="h-16 w-16 text-gray-500" />
               )}
             </div>
+
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileSelect}
+              accept="image/*"
+              className="hidden"
+              disabled={avatarUpdateMutation.isPending}
+            />
+
             <button
-              className="text-[#AF7026] text-sm hover:underline"
-              disabled={!isEditingPerfil}
+              className={`text-[#AF7026] text-sm hover:underline mt-2 ${
+                avatarUpdateMutation.isPending
+                  ? "opacity-50 cursor-not-allowed"
+                  : ""
+              }`}
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={avatarUpdateMutation.isPending}
             >
-              Escolher arquivo
+              {avatarUpdateMutation.isPending
+                ? "Enviando..."
+                : "Escolher arquivo"}
             </button>
           </div>
         </div>
