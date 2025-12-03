@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import useAuthStore from "../../store/userAuthStore";
@@ -52,7 +51,7 @@ export default function CadastroPage() {
     onSuccess: (data) => {
       setUser(data);
       alert("Cadastro realizado com sucesso!");
-      router.push("/");
+      router.push("/prelogin");
     },
     onError: (error) => {
       alert("Erro ao cadastrar: " + error.message);
