@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import useAuthStore from "../store/userAuthStore";
 import { useState } from "react";
+
 export function Navbar() {
   const router = useRouter();
   const { isAuthenticated, user, logout } = useAuthStore();
@@ -47,6 +48,9 @@ export function Navbar() {
   };
 
   const displayName = user?.nome || user?.username;
+  const displayAvatarUrl = user?.avatar?.url;
+
+  const finalAvatarSrc = user?.avatar?.url;
 
   const perfilRoute = isAuthenticated ? "/perfil" : "/prelogin";
 
@@ -119,8 +123,20 @@ export function Navbar() {
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 className="flex items-center gap-1 p-2 rounded-full hover:bg-gray-100 transition duration-150 cursor-pointer border border-transparent hover:border-gray-200"
               >
-                <div className="h-8 w-8 rounded-full bg-[#AF7026] flex items-center justify-center overflow-hidden">
-                  <User className="h-5 w-5 text-white" />
+                <div className="h-8 w-8 rounded-full flex items-center justify-center overflow-hidden">
+                  {finalAvatarSrc ? (
+                    <Image
+                      key={finalAvatarSrc}
+                      src={finalAvatarSrc}
+                      alt="Foto de Perfil"
+                      width={32}
+                      height={32}
+                      className="object-cover h-full w-full"
+                      priority
+                    />
+                  ) : (
+                    <User className="h-5 w-5 text-gray-500" /> 
+                  )}
                 </div>
 
                 <span className="text-gray-900 font-semibold text-sm whitespace-nowrap">
