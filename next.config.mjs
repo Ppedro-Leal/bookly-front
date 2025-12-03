@@ -1,6 +1,18 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
+ images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'parsefiles.back4app.com',
+        port: '',
+        pathname: '/**',
+      },
+     
+    ],
+  },
+  
 };
+
 
 export default nextConfig;
