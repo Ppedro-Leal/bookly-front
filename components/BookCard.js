@@ -1,6 +1,3 @@
-// components/BookCard.js
-// Card de livro usado na listagem. Navega para /details/[id] passando o objectId.
-
 import { Card, CardContent, CardFooter } from "./ui/card";
 import { Button } from "./ui/button";
 import { MapPin, Library } from "lucide-react";
