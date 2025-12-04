@@ -472,8 +472,7 @@ export default function LivrosPage() {
                   : `${books.length} Livros Encontrados`}
               </h2>
               <div className="hidden md:flex items-center gap-2 text-gray-600">
-                <BookOpen className="w-5 h-5" /> Exibindo
-                {books.length} resultados
+                <BookOpen className="w-5 h-5" /> Exibindo {books.length} resultados
               </div>
             </div>
 
