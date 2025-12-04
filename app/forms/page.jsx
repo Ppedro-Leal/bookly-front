@@ -15,6 +15,18 @@ const HEADERS = {
   "Content-Type": "application/json",
 };
 
+async function fetchStates() {
+  const response = await fetch(`${API_BASE_URL}/classes/State`, {
+    headers: HEADERS,
+  });
+  if (!response.ok) throw new Error("Erro ao buscar estados.");
+  const data = await response.json();
+  return data.results.map((state) => ({
+    objectId: state.objectId,
+    nome: state.nome,
+  }));
+}
+
 async function fetchCategories() {
   const response = await fetch(`${API_BASE_URL}/classes/Category`, {
     headers: HEADERS,
@@ -75,6 +87,8 @@ async function registerBookOnBack4App(bookData, sessionToken) {
     categoryObjectId,
     type,
     cover,
+    city,
+    stateObjectId,
   } = bookData;
 
   const body = {
@@ -91,6 +105,12 @@ async function registerBookOnBack4App(bookData, sessionToken) {
       __type: "Pointer",
       className: "_User",
       objectId: useAuthStore.getState().user.objectId,
+    },
+    city: city,
+    state: {
+      __type: "Pointer",
+      className: "State",
+      objectId: stateObjectId,
     },
   };
 
@@ -152,6 +172,8 @@ export default function BookRegisterPage() {
     genreObjectIds: [],
     type: "Doação",
     coverFile: null,
+    city: "",
+    stateObjectId: "",
   });
 
   const [coverPreviewUrl, setCoverPreviewUrl] = useState(null);
@@ -165,6 +187,11 @@ export default function BookRegisterPage() {
       }
     };
   }, [coverPreviewUrl]);
+
+  const statesQuery = useQuery({
+    queryKey: ["states"],
+    queryFn: fetchStates,
+  });
 
   const categoriesQuery = useQuery({
     queryKey: ["categories"],
@@ -245,6 +272,8 @@ export default function BookRegisterPage() {
         throw new Error("Por favor, selecione a Categoria principal.");
       if (bookData.genreObjectIds.length === 0)
         throw new Error("Por favor, selecione pelo menos um Gênero.");
+      if (!bookData.city || !bookData.stateObjectId)
+        throw new Error("Por favor, preencha a Cidade e selecione o Estado.");
 
       const parseFileObject = await uploadFileToBack4App(
         bookData.coverFile,
@@ -259,6 +288,8 @@ export default function BookRegisterPage() {
         categoryObjectId: bookData.categoryObjectId,
         genreObjectIds: bookData.genreObjectIds,
         cover: parseFileObject,
+        city: bookData.city,
+        stateObjectId: bookData.stateObjectId,
       };
 
       return registerBookOnBack4App(bookToRegister, currentSessionToken);
@@ -273,6 +304,8 @@ export default function BookRegisterPage() {
         genreObjectIds: [],
         type: "Doação",
         coverFile: null,
+        city: "",
+        stateObjectId: "",
       });
       if (coverPreviewUrl) {
         URL.revokeObjectURL(coverPreviewUrl);
@@ -299,18 +332,23 @@ export default function BookRegisterPage() {
     registerMutation.mutate(formData);
   };
 
-  if (categoriesQuery.isLoading || genresQuery.isLoading) {
+  if (
+    categoriesQuery.isLoading ||
+    genresQuery.isLoading ||
+    statesQuery.isLoading
+  ) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <p className="text-[#AF7026]">Carregando opções do catálogo...</p>
+             <p className="text-[#AF7026]">Carregando opções do catálogo...</p> 
+         
       </div>
     );
   }
 
-  if (categoriesQuery.isError || genresQuery.isError) {
+  if (categoriesQuery.isError || genresQuery.isError || statesQuery.isError) {
     return (
       <div className="flex justify-center items-center h-screen text-red-600">
-        <p>Erro ao carregar categorias e gêneros. Tente novamente.</p>
+                <p>Erro ao carregar opções do catálogo. Tente novamente.</p>   
       </div>
     );
   }
@@ -318,7 +356,7 @@ export default function BookRegisterPage() {
   return (
     <>
       <Navbar />
-      <div className="min-h-screen bg-gray-50 py-12">
+      <div className="min-h-screen bg-[#FFFFFB] py-12">
         <div className="container mx-auto px-4 max-w-7xl">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-12 text-[#AF7026]">
             Cadastro de livros
@@ -383,9 +421,10 @@ export default function BookRegisterPage() {
 
               <div className="space-y-6">
                 <div>
+                                 
                   <label
                     htmlFor="title"
-                    className="block text-lg font-semibold text-gray-800 mb-2"
+                    className="block text-xl font-semibold text-white mb-2"
                   >
                     Título: *
                   </label>
@@ -400,11 +439,10 @@ export default function BookRegisterPage() {
                     className="w-full px-4 py-3 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AF7026] focus:border-transparent outline-none transition"
                   />
                 </div>
-
                 <div>
                   <label
                     htmlFor="author"
-                    className="block text-lg font-semibold text-gray-800 mb-2"
+                    className="block text-xl font-semibold text-white mb-2"
                   >
                     Autor: *
                   </label>
@@ -420,10 +458,57 @@ export default function BookRegisterPage() {
                   />
                 </div>
 
+                <div className="flex flex-row">
+                   
+                  <div className="w-2/4">
+                    <label
+                      htmlFor="city"
+                      className="block text-xl font-semibold text-white mb-2"
+                    >
+                      Cidade: *
+                    </label>
+                    <input
+                      id="city"
+                      type="text"
+                      name="city"
+                      placeholder="Ex: São Paulo"
+                      value={formData.city}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AF7026] focus:border-transparent outline-none transition"
+                    />
+                  </div>
+                             {" "}
+                  <div className="w-2/4">
+                    <label
+                      htmlFor="stateObjectId"
+                      className="block text-xl font-semibold text-white mb-2"
+                    >
+                      Estado: *
+                    </label>
+                    <select
+                      id="stateObjectId"
+                      name="stateObjectId"
+                      value={formData.stateObjectId}
+                      onChange={handleChange}
+                      required
+                      className="w-full px-4 py-3 border border-gray-300 bg-white rounded-lg focus:ring-2 focus:ring-[#AF7026] focus:border-transparent outline-none transition"
+                    >
+                      <option value="" disabled>
+                        Selecione o Estado
+                      </option>
+                      {statesQuery.data?.map((state) => (
+                        <option key={state.objectId} value={state.objectId}>
+                          {state.nome}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
                 <div>
                   <label
                     htmlFor="categoryObjectId"
-                    className="block text-lg font-semibold text-gray-800 mb-2"
+                    className="block text-xl font-semibold text-white mb-2"
                   >
                     Categoria principal: *
                   </label>
@@ -445,9 +530,8 @@ export default function BookRegisterPage() {
                     ))}
                   </select>
                 </div>
-
                 <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
+                  <label className="block text-xl font-semibold text-white mb-2">
                     Gêneros (Múltipla escolha): *
                   </label>
                   <div className="grid grid-cols-2 gap-3 p-3 bg-white rounded-lg border border-gray-300 h-40 overflow-y-auto">
@@ -473,11 +557,10 @@ export default function BookRegisterPage() {
                     ))}
                   </div>
                 </div>
-
                 <div>
                   <label
                     htmlFor="description"
-                    className="block text-lg font-semibold text-gray-800 mb-2"
+                    className="block text-xl font-semibold text-white mb-2"
                   >
                     Descrição:
                   </label>
@@ -491,9 +574,8 @@ export default function BookRegisterPage() {
                     className="w-full px-4 py-3 border bg-white border-gray-300 rounded-lg focus:ring-2 focus:ring-[#AF7026] focus:border-transparent outline-none transition resize-none"
                   />
                 </div>
-
                 <div>
-                  <label className="block text-lg font-semibold text-gray-800 mb-2">
+                  <label className="block text-xl font-semibold text-white mb-2">
                     Tipo:
                   </label>
                   <div className="flex gap-4">
@@ -505,7 +587,6 @@ export default function BookRegisterPage() {
                     </div>
                   </div>
                 </div>
-
                 <div className="pt-6 items-center flex justify-center">
                   <Button
                     type="submit"
