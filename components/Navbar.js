@@ -17,6 +17,9 @@ import {
   Menu,
   X,
   Info,
+  BookOpen,
+  ClipboardListIcon,
+  BookPlus,
 } from "lucide-react";
 import useAuthStore from "../store/userAuthStore";
 import { useState } from "react";
@@ -235,14 +238,14 @@ export function Navbar() {
       <div className="flex gap-2 items-center">
         {isAuthenticated ? (
           <div className="lg:flex gap-2 items-center ml-4 hidden">
-            <NavButton href="/livros" variant={"ghost"} icon={Book}>
+            <NavButton href="/livros" variant={"ghost"} icon={BookOpen}>
               Livros
             </NavButton>
             <NavButton href="/doacoes" variant={"ghost"} icon={Handshake}>
               Doações
             </NavButton>
-            <NavButton href="/sobre" variant={"ghost"} icon={Info}>
-              Sobre
+            <NavButton href="/pedidos" variant={"ghost"} icon={ClipboardListIcon}>
+              Pedidos
             </NavButton>
             <NavButton
               href="/forms"
@@ -292,6 +295,12 @@ export function Navbar() {
                     className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   >
                     <UserCog className="h-4 w-4" /> Perfil
+                  </div>
+                  <div
+                    onClick={() => navigate("/solicitacoes")}
+                    className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  >
+                    <BookPlus className="h-4 w-4" /> Solicitações
                   </div>
                   <div
                     onClick={handleLogout}
