@@ -30,7 +30,7 @@ const HEADERS = {
 async function fetchBookDetails(bookId) {
   if (!bookId) return null;
 
-  const response = await fetch(/api/book/${bookId}, {
+  const response = await fetch(`/api/book/${bookId}`, {
     cache: "no-store",
   });
 
@@ -66,7 +66,7 @@ async function createBookRequest(bookData, sessionToken) {
     ownerName: bookData.ownerName,
   };
 
-  const response = await fetch(${API_BASE_URL}/classes/BookRequest, {
+  const response = await fetch(`${API_BASE_URL}/classes/BookRequest`, {
     method: "POST",
     headers: {
       ...HEADERS,
@@ -173,7 +173,7 @@ export default function BookDetailsPage() {
       return;
     }
 
-    window.location.href = mailto:${owner.email}?subject=Interesse no livro: ${book.title};
+    window.location.href = `mailto:${owner.email}?subject=Interesse no livro: ${book.title}`;
   };
 
   if (isLoading) {
