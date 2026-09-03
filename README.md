@@ -12,6 +12,40 @@ https://bookly-front.vercel.app/
 
 É possível criar uma conta diretamente pela plataforma para testar as funcionalidades disponíveis.
 
+## Preview
+
+### Catálogo de livros
+
+<p align="center">
+  <img src="./docs/images/bookly-catalogo-populares.png" alt="Catálogo de livros populares do Bookly" width="950">
+</p>
+
+### Busca, filtros e livros para doação
+
+<p align="center">
+  <img src="./docs/images/bookly-livros-doacao.png" alt="Tela de livros para doação com busca e filtros" width="950">
+</p>
+
+### Cadastro de livros
+
+<p align="center">
+  <img src="./docs/images/bookly-cadastro-livro.png" alt="Formulário de cadastro de livros do Bookly" width="950">
+</p>
+
+<details>
+  <summary><strong>Ver outras telas</strong></summary>
+
+  <br>
+
+  <p align="center">
+    <img src="./docs/images/bookly-perfil.png" alt="Tela de perfil do usuário no Bookly" width="950">
+  </p>
+
+  <p align="center">
+    <img src="./docs/images/bookly-login.png" alt="Tela de acesso do Bookly" width="950">
+  </p>
+</details>
+
 ## Principais funcionalidades
 
 - Cadastro e autenticação de usuários
@@ -132,14 +166,15 @@ http://localhost:3000
 Projeto desenvolvido academicamente por:
 
 - Pedro Henrique Leal Amaral - https://linkedin.com/in/pedrohleal
-- Marielly de Araújo Silva -  https://www.linkedin.com/in/mariellyaraujo/
+- Marielly de Araújo Silva - https://www.linkedin.com/in/mariellyaraujo/
 - Luanna Evellyn Batista da Silva - https://www.linkedin.com/in/luanna-silva-bs/
 - Vinicius da Silva Miranda - https://www.linkedin.com/in/viniciussmiranda/
-- Maysa Clara Cavalcante da Silva - [https://www.linkedin.com/in/maysa-clara](https://www.linkedin.com/in/maysa-clara-cavalcante-5b1b7b2b7/)
-- Helleson Allan Borges de Santana - 
+- Maysa Clara Cavalcante da Silva - https://www.linkedin.com/in/maysa-clara-cavalcante-5b1b7b2b7/
+- Helleson Allan Borges de Santana
 - Arthur Marques da Silveira - https://www.linkedin.com/in/arthurmdsilveira/
-- Saira Aguiar Rocha - [https://www.linkedin.com/in/saira-aguiar](https://www.linkedin.com/in/saira-aguiar-6584881a1/)
+- Saira Aguiar Rocha - https://www.linkedin.com/in/saira-aguiar-6584881a1/
 
 ## Links
 
 - Aplicação: https://bookly-front.vercel.app/
+- Repositório: https://github.com/Ppedro-Leal/bookly-front
